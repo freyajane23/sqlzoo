@@ -27,5 +27,93 @@ ORDER BY subject IN ('Physics','Chemistry'),subject,winner
 select name,  concat(round(population*100/(select population from world where name='Germany'),0),'%')
 from world
 where continent='Europe'
+#7
+/*Find the largest country (by area) in each continent, show the continent, the name and the area:*/
+SELECT continent, name, area FROM world x
+  WHERE area >= ALL
+    (SELECT area FROM world y
+        WHERE y.continent=x.continent
+          AND area>0)
+#8
+/* List  each continent and the name of the country that comes first alphabetically.*/
+select continent, name from world x
+where name <= All(select name from world y
+              where x.continent=y.continent)
+#9
+/*Find the continents where all countries have a population <= 25000000. Then find the names of the countries associated with these continents. Show name, continent and population.*/
+select name, continent, population from world x
+where 25000000 >= All(select population from world y where x.continent=y.continent)
+
+#10
+/* Some countries have populations more than three times that of any of their neighbours (in the same continent). Give the countries and continents.*/
+select name, continent from world as x
+where population/3 >= All(select population from world y 
+                        where x.continent=y.continent 
+                        and x.name != y.name)
+ 
+ #The JOIN OPERATION#
+ /*https://sqlzoo.net/wiki/The_JOIN_operation*/
+#13
+/*List every match with the goals scored by each team as shown. This will use "CASE WHEN" which has not been explained in any previous exercises.*/
+SELECT
+    mdate,
+    team1,
+    SUM( CASE WHEN teamid = team1 THEN 1 ELSE 0 END ) AS score1,
+    team2,
+    SUM( CASE WHEN teamid = team2 THEN 1 ELSE 0 END ) AS score2
+FROM game LEFT JOIN goal
+    ON id = matchid
+GROUP BY mdate, team1, team2
+ORDER BY mdate, matchid, team1, team2
+
+#More Join#
+/*https://sqlzoo.net/wiki/More_JOIN_operations*/
+#12
+List the film title and the leading actor for all of the films 'Julie Andrews' played in.
+Did you get "Little Miss Marker twice"?
+/*need to use the movie id not the title*/
+select distinct title, name
+from movie
+left join casting on movie.id=casting.movieid
+left join actor on actor.id=casting.actorid
+where ord=1 and movieid in (
+select movieid 
+from casting
+join actor on actor.id=casting.actorid
+where name='Julie Andrews'
+ )
+ 
+# the old one I did earlier. This gets "Little Miss Marker twice" Should not use title as a unique id to link the table#
+ select distinct movieid, title, name
+from movie
+left join casting on movie.id=casting.movieid
+left join actor on actor.id=casting.actorid
+where ord=1 and title in (
+select title 
+from movie
+left join casting on movie.id=casting.movieid
+left join actor on actor.id=casting.actorid
+where name='Julie Andrews'
+ )
+
+# 13
+# Obtain a list, in alphabetical order, of actors who've had at least 15 starring roles.#
+select name
+from actor
+where id in (select actorid
+from casting
+where ord=1
+group by actorid
+having sum(ord)>=15)
+order by name
+
+#better answer#
+SELECT name
+FROM casting JOIN actor ON actorid = actor.id
+WHERE ord = 1
+GROUP BY name
+HAVING count(movieid) >= 30
+ORDER BY name;
+
 
 
