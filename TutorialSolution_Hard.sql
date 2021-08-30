@@ -115,5 +115,16 @@ GROUP BY name
 HAVING count(movieid) >= 30
 ORDER BY name;
 
-
+#15
+/*List all the people who have worked with 'Art Garfunkel'.*/ 
+/*Need to exclude Art Garfunkel in the result*/
+ SELECT actor.name  FROM casting
+       JOIN movie ON movie.id=casting.movieid
+      JOIN actor ON  actor.id=casting.actorid
+     WHERE actor.name !='Art Garfunkel'
+    AND
+       movie.id IN(SELECT movie.id FROM casting
+           JOIN movie ON movie.id=casting.movieid
+       JOIN actor ON  actor.id=casting.actorid
+        WHERE actor.name='Art Garfunkel')
 
