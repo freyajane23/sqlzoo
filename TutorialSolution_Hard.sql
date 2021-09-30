@@ -127,4 +127,17 @@ ORDER BY name;
            JOIN movie ON movie.id=casting.movieid
        JOIN actor ON  actor.id=casting.actorid
         WHERE actor.name='Art Garfunkel')
+ 
+ #Window Functions
+/*https://sqlzoo.net/wiki/Window_functions*/
+/*You can use SELECT within SELECT to pick out only the winners in Edinburgh.*/
+
+SELECT constituency,party
+  FROM ge X
+ WHERE constituency BETWEEN 'S14000021' AND 'S14000026'
+   AND yr  = 2017 
+AND VOTES >= ALL(SELECT VOTES FROM GE Y WHERE X.constituency=Y.constituency AND Y.YR=2017)
+ORDER BY constituency,VOTES DESC
+
+
 
